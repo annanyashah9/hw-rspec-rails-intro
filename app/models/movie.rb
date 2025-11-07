@@ -39,4 +39,17 @@ class Movie < ActiveRecord::Base
   rescue Faraday::Error => e
     raise TmdbError, "Network error: #{e.message}"
   end
+  def self.all_ratings
+  %w[G PG PG-13 R NC-17]
+end
+
+# Helper used by MoviesController#index to filter and sort
+def self.with_ratings(ratings, sort_by)
+  rel = all
+  # if no ratings passed, show all
+  ratings = all_ratings if ratings.blank?
+  rel = rel.where(rating: ratings)
+  rel = rel.order(sort_by) if sort_by.present?
+  rel
+end
 end
